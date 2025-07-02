@@ -50,7 +50,7 @@ This workflow is ideal for developers who want to:
 
 **Nader Maged**  
 Backend Developer | Automation Enthusiast  
-[LinkedIn](www.linkedin.com/in/nader-maged) • [GitHub](https://github.com/Kidzantso)
+[LinkedIn](https://www.linkedin.com/in/nader-maged-375ba7275/) • [GitHub](https://github.com/Kidzantso)
 
 ---
 
