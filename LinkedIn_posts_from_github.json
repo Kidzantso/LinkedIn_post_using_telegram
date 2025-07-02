@@ -1,0 +1,278 @@
+{
+  "name": "LinkedIn posts from github",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d23f618-457a-4a04-8135-e518cd254c5b",
+              "name": "OpenAI Response",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "c4fe310d-3d39-4e33-8f44-80a42a3d8f32",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        0
+      ],
+      "id": "57b1bef4-dbf2-4846-943c-726fe8cfc330",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "Kidzantso",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.message.text }}",
+          "mode": "name"
+        },
+        "filePath": "README.md",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        0
+      ],
+      "id": "ca949b04-bf66-47c6-b89f-b466bb304576",
+      "name": "Get a file",
+      "webhookId": "be07d9d6-1228-4903-8456-173b3c591347",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "QfsIDcRjQj0ViXOW",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        300,
+        0
+      ],
+      "id": "06c52526-ab5a-4b1b-9fb6-95a8889c88ea",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Here is a readme file from my GitHub project. Read it carefully and make a LinkedIn post about the project with proper format.{{ $json.text }} {{ $json.data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        580,
+        0
+      ],
+      "id": "fa9edd26-5215-472c-9ca0-36c33d6733eb",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bj0yrD5iJqmixhRt",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        260,
+        220
+      ],
+      "id": "85e72f6e-5496-4b3a-b2a9-ea2ee69d60e8",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst updatedItems = items.map((item) => {\n  let text = item?.json?.data;\n  text = text.replace(/<[^>]*>/g, \"\");\n  text = text.replace(/\\n/g, \" \");\n  text = text.replace(/\\*/g, \"\");\n  return { text: text };\n});\nreturn updatedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        220
+      ],
+      "id": "2fe2eae7-dbc0-484b-8643-8cc24262eda6",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        60
+      ],
+      "id": "9cd0f875-6735-41ad-8b75-0a64957bd492",
+      "name": "Telegram Trigger",
+      "webhookId": "a93efdf2-858c-4cff-935d-f644281d241c",
+      "credentials": {
+        "telegramApi": {
+          "id": "kO413qZuQaNz7ux9",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "912934483",
+        "text": "={{ $json['OpenAI Response'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1180,
+        160
+      ],
+      "id": "6ed97702-1e08-4b0c-8e33-63385a2d24e9",
+      "name": "Send a text message",
+      "webhookId": "7dac132e-4376-4006-b2e1-f2bbafc1db59",
+      "credentials": {
+        "telegramApi": {
+          "id": "kO413qZuQaNz7ux9",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f6214c3e-c8b6-4ebb-ae1a-652e4feb8342",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3cfbaa1cbd2de4831485a52fbe0d83753dacc43b27d7a9b4c623a045a92c1f6"
+  },
+  "id": "zmkBqEDb03KlUD9w",
+  "tags": []
+}
