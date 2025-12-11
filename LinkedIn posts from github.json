@@ -1,0 +1,284 @@
+{
+  "name": "LinkedIn posts from github",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d23f618-457a-4a04-8135-e518cd254c5b",
+              "name": "Ollama Response",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "c4fe310d-3d39-4e33-8f44-80a42a3d8f32",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        272
+      ],
+      "id": "176a16fd-e598-4b48-a7a0-1bfdea4ae785",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "Kidzantso",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.message.text }}",
+          "mode": "name"
+        },
+        "filePath": "README.md",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        48,
+        128
+      ],
+      "id": "50946487-da8f-46ba-9864-19ec0e9a18db",
+      "name": "Get a file",
+      "webhookId": "be07d9d6-1228-4903-8456-173b3c591347",
+      "credentials": {
+        "githubApi": {
+          "id": "ePP3sKYKn2fgnM17",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        272,
+        128
+      ],
+      "id": "0ad5b444-52e2-48fc-8f67-5e031abac2ec",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        240,
+        352
+      ],
+      "id": "d774726f-72ad-47ec-8a65-f42fd36d7b23",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst updatedItems = items.map((item) => {\n  let text = item?.json?.data;\n  text = text.replace(/<[^>]*>/g, \"\");\n  text = text.replace(/\\n/g, \" \");\n  text = text.replace(/\\*/g, \"\");\n  return { text: text };\n});\nreturn updatedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        352
+      ],
+      "id": "f96019f0-bd6c-4538-a88c-ab7aa2e7bf40",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        192
+      ],
+      "id": "68e9bcea-05f4-4694-8d44-02b37d1c208d",
+      "name": "Telegram Trigger",
+      "webhookId": "a93efdf2-858c-4cff-935d-f644281d241c",
+      "credentials": {
+        "telegramApi": {
+          "id": "w8K6GOdrJACOQasW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "912934483",
+        "text": "={{ $json['Ollama Response'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        288
+      ],
+      "id": "aaf07506-222e-4249-b578-faa3e7c73e47",
+      "name": "Send a text message",
+      "webhookId": "7dac132e-4376-4006-b2e1-f2bbafc1db59",
+      "credentials": {
+        "telegramApi": {
+          "id": "w8K6GOdrJACOQasW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "llama3.2:latest",
+          "mode": "list",
+          "cachedResultName": "llama3.2:latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a professional LinkedIn content creator. \nRead the following README file carefully {{ $json.text }} and generate a LinkedIn post that:\n\n- Uses a professional tone suitable for developers and recruiters\n- Is 3–4 short paragraphs long\n- Starts with a strong, engaging headline\n- Summarizes the project clearly, highlighting its technical features and unique value\n- Explains why the project is relevant for developers and recruiters\n- Encourages readers to visit the GitHub repository\n- Ends with a concise call-to-action\n- Automatically generates 3–4 relevant hashtags based on the README content\n\nFormat the output as a LinkedIn post with:\n- Headline (1 line, bold or emoji-enhanced if appropriate)\n- 3–4 short paragraphs (2–3 sentences each)\n- Bullet points if the README lists features\n- Final call-to-action line\n- Hashtags at the end"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        528,
+        80
+      ],
+      "id": "7f8e7522-fb18-4bc9-b88c-e9d06d31493f",
+      "name": "Message a model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false,
+    "errorWorkflow": "vstS0sW1v6kTewta",
+    "timezone": "Africa/Cairo"
+  },
+  "versionId": "dbaebae2-59a8-4035-b345-4ca01d0d17b7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "vstS0sW1v6kTewta",
+  "tags": []
+}
