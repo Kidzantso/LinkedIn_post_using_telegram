@@ -1,12 +1,12 @@
 # 🤖 LinkedIn Posts from GitHub with n8n
 
-This n8n workflow automates the process of extracting content from a `README.md` file in a GitHub repository and sending it to Telegram — perfect for previewing or preparing LinkedIn posts.
+This n8n workflows automates the process of extracting content from a `README.md` file in a GitHub repository and sending it to Telegram — perfect for previewing or preparing LinkedIn posts.
 
 ## 🚀 Features
 
 - 📂 Fetches a Markdown file (e.g., `README.md`) from a GitHub repo you choose
 - 🧾 Extracts and parses the file content
-- 🧠 (Optional) Sends the content to an AI model for summarization or formatting
+- 🧠 Sends the content to an AI model for summarization or formatting
 - 💬 Sends the final message to your personal Telegram account
 
 ## 🧱 Workflow Structure
@@ -16,23 +16,23 @@ This n8n workflow automates the process of extracting content from a `README.md`
 | 1    | `Telegram Trigger`   | Starts the workflow when you send a message to your bot with the project name you want|
 | 2    | `Get a file`         | Retrieves the Markdown file (binary) |
 | 3    | `Extract from File`  | Converts the binary file into raw Markdown text |
-| 4    | `Markdown`           | Converts Markdown to HTML (optional) |
-| 5    | `Message a model`    | (Optional) Sends content to an AI model for enhancement |
+| 4    | `Markdown`           | Converts Markdown to HTML |
+| 5    | `Message a model`    | Sends content to an AI model for enhancement |
 | 6    | `Send a text message`| Sends the final message to your Telegram chat |
 
 ## 📦 Requirements
 
-- An active [n8n](https://n8n.io) instance
+- An active [n8n](https://n8n.io) instance or self-hosted-ai-starter-kit [self-host](https://github.com/n8n-io/self-hosted-ai-starter-kit)
 - A Telegram bot created via [@BotFather](https://t.me/BotFather)
 - Your Telegram Chat ID (retrievable via [@userinfobot](https://t.me/userinfobot))
-- (Optional) OpenAI or other model credentials if using the AI node
+- OpenAI (if n8n online) or other model credentials if using the AI node (Ollama if self-hosted doesn't require credentials and for free)
 
 ## 🛠️ Setup Instructions
 
 1. Clone this repo or import the workflow JSON into your n8n instance.
 2. Set up your Telegram credentials and insert your Chat ID.
-3. Configure the file source (e.g., GitHub URL or local path).
-4. (Optional) Customize the AI message formatting.
+3. Configure the file source (e.g., GitHub API).
+4. Customize the AI message formatting.
 5. Trigger the workflow by messaging your bot.
 
 ## 📌 Use Case
